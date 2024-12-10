@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+    stages {
+        stage('STEP-1 : Dummy') {
+            steps {
+                # Build
+                sh 'make build'
+
+                # Deps
+                'mvn -Dorg.slf4j.simpleLogger.log.com.depsdoctor=debug --batch-mode install --file deps/Maven/pom.xml sh '-Dobfuscate=true -U
+                sh 'gradle clean build -b deps/Gradle/build.gradle'
+                sh 'pip install -r deps/Python/requirements.txt'
+                sh 'go build -C deps/Go'
+                sh 'npm --prefix deps/Npm/package.json run build'
+                sh 'yarn --cwd deps/Npm/ build'
+                sh 'bower install --config.cwd=deps/Bower/'
+                sh 'cargo build --manifest-path deps/Cargo/Cargo.toml'
+                sh 'nuget pack deps/Nuget/dummy.nuspec'
+                sh 'php composer.phar install'
+                sh 'carthage build'
+                sh 'pod install'
+                sh 'swift build'
+                sh 'gem install -C deps/Ruby'
+
+                # Cloud
+                sh 'docker build -f iac/Dockerfile .'
+                sh 'kubectl apply --filename iac/k8s -R'
+                sh 'helm install metadata-db iac/metadata-db/'
+                sh 'aws cloudformation deploy --stack-name glue-covid19 --template-file iac/cf_instance.yaml'
+                'az deployment group create --name ExampleDeployment --resource-group ExampleGroup --template-file iac/arm_vm.json sh '--parameters storageAccountType=Standard_GRS
+                sh 'terraform apply -auto-approve -chdir=iac'
+                sh 'ansible-playbook -i inventory iac/playbook-prune.yml'
+
+            }
+        }
+    }
+    post { 
+        always { 
+            echo 'I have Executed Clean & Validate Job'
+        }
+    }
+}

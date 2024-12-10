@@ -1,0 +1,21 @@
+plugins {
+    id 'application' 
+}
+
+repositories {
+    mavenCentral() 
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1' 
+
+    implementation 'com.google.guava:guava:31.1' 
+}
+
+application {
+    mainClass = 'demo.App' 
+}
+
+tasks.named('test') {
+    useJUnitPlatform() 
+}
